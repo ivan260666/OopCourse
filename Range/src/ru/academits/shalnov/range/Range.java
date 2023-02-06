@@ -9,16 +9,8 @@ public class Range {
         this.to = to;
     }
 
-    public double getFrom() {
-        return from;
-    }
-
     public void setFrom(double from) {
         this.from = from;
-    }
-
-    public double getTo() {
-        return to;
     }
 
     public void setTo(double to) {
@@ -35,66 +27,73 @@ public class Range {
         return number - from >= -epsilon && number - to <= epsilon;
     }
 
-    public Range getCrossingRange(Range range2) {
-        double rangeStart1 = this.getFrom();
-        double rangeEnd1 = this.getTo();
+    public Range getIntersection(Range range) {
+        double from1 = from;
+        double to1 = to;
 
-        double rangeStart2 = range2.getFrom();
-        double rangeEnd2 = range2.getTo();
+        double from2 = range.from;
+        double to2 = range.to;
 
-        double crossingRangeStart = Math.max(rangeStart1, rangeStart2);
-        double crossingRangeEnd = Math.min(rangeEnd1, rangeEnd2);
+        double intersectionFrom = Math.max(from1, from2);
+        double intersectionTo = Math.min(to1, to2);
 
-        if ((this.isInside(crossingRangeStart) && this.isInside(crossingRangeStart)) &&
-                (range2.isInside(crossingRangeStart) && range2.isInside(crossingRangeEnd)) &&
-                (crossingRangeStart != crossingRangeEnd)) {
-            return new Range(crossingRangeStart, crossingRangeEnd);
+        if ((intersectionFrom >= Math.min(from1, from2) && intersectionFrom <= Math.max(to1, to2)) &&
+                (intersectionTo >= Math.min(from1, from2) && intersectionTo <= Math.max(to1, to2)) &&
+                (intersectionFrom < intersectionTo)) {
+            return new Range(intersectionFrom, intersectionTo);
         }
 
         return null;
     }
 
-    public Range[] getRangeIntervalsUnion(Range range2) {
-        double rangeStart1 = this.getFrom();
-        double rangeEnd1 = this.getTo();
+    public Range[] getUnion(Range range) {
+        double from1 = from;
+        double to1 = to;
 
-        double rangeStart2 = range2.getFrom();
-        double rangeEnd2 = range2.getTo();
+        double from2 = range.from;
+        double to2 = range.to;
 
-        double crossingRangeStart = Math.max(rangeStart1, rangeStart2);
-        double crossingRangeEnd = Math.min(rangeEnd1, rangeEnd2);
+        double intersectionFrom = Math.max(from1, from2);
+        double intersectionTo = Math.min(to1, to2);
 
-        if ((this.isInside(crossingRangeStart) && this.isInside(crossingRangeStart)) &&
-                (range2.isInside(crossingRangeStart) && range2.isInside(crossingRangeEnd))) {
-            return new Range[]{new Range(Math.min(rangeStart1, rangeStart2), Math.max(rangeEnd1, rangeEnd2))};
+        if ((intersectionFrom >= Math.min(from1, from2) && intersectionFrom <= Math.max(to1, to2)) &&
+                (intersectionTo >= Math.min(from1, from2) && intersectionTo <= Math.max(to1, to2)) &&
+                (intersectionFrom <= intersectionTo)) {
+            return new Range[]{new Range(Math.min(from1, from2), Math.max(to1, to2))};
         }
 
-        return new Range[]{new Range(rangeStart1, rangeEnd1), new Range(rangeStart2, rangeEnd2)};
+        return new Range[]{new Range(from1, to1), new Range(from2, to2)};
     }
 
-    public Range[] getDifferenceBetweenRanges(Range subtractedRange) {
-        double rangeStart = this.getFrom();
-        double rangeEnd = this.getTo();
+    public Range[] getDifference(Range subtractedRange) {
+        double from = this.from;
+        double to = this.to;
 
-        double subtrahendRangeStart = subtractedRange.getFrom();
-        double subtrahendRangeEnd = subtractedRange.getTo();
+        double subtrahendRangeFrom = subtractedRange.from;
+        double subtrahendRangeTo = subtractedRange.to;
 
-        if (subtractedRange.isInside(rangeStart) && subtractedRange.isInside(rangeEnd)) {
-            return null;
+        if ((from >= subtrahendRangeFrom && from <= subtrahendRangeTo) &&
+                (to >= subtrahendRangeFrom && to <= subtrahendRangeTo)) {
+            return new Range[]{};
         }
 
-        if (subtractedRange.isInside(rangeStart)) {
-            return new Range[]{new Range(subtrahendRangeEnd, rangeEnd)};
+        if (from >= subtrahendRangeFrom && from <= subtrahendRangeTo) {
+            return new Range[]{new Range(subtrahendRangeTo, to)};
         }
 
-        if (subtractedRange.isInside(rangeEnd)) {
-            return new Range[]{new Range(rangeStart, subtrahendRangeStart)};
+        if (to >= subtrahendRangeFrom && to <= subtrahendRangeTo) {
+            return new Range[]{new Range(from, subtrahendRangeFrom)};
         }
 
-        if (this.getCrossingRange(subtractedRange) != null) {
-            return new Range[]{new Range(rangeStart, subtrahendRangeStart), new Range(subtrahendRangeEnd, rangeEnd)};
+        if (this.getIntersection(subtractedRange) != null) {
+            return new Range[]{new Range(from, subtrahendRangeFrom), new Range(subtrahendRangeTo, to)};
         }
 
-        return new Range[]{new Range(rangeStart, rangeEnd)};
+        return new Range[]{new Range(from, to)};
+    }
+
+    @Override
+    public String toString() {
+        return "Начало диапазона = " + from + ", конец диапазона = " + to;
     }
 }
