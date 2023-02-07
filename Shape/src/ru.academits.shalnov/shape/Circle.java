@@ -1,7 +1,7 @@
 package ru.academits.shalnov.shape;
 
 public class Circle implements Shape {
-    double radius;
+    private final double radius;
 
     public Circle(double radius) {
         this.radius = radius;

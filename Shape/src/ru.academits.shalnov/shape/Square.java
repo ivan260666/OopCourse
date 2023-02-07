@@ -1,7 +1,7 @@
 package ru.academits.shalnov.shape;
 
 public class Square implements Shape {
-    double sideLength;
+    private final double sideLength;
 
     public Square(double sideLength) {
         this.sideLength = sideLength;

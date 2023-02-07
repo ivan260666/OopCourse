@@ -1,8 +1,8 @@
 package ru.academits.shalnov.shape;
 
 public class Rectangle implements Shape {
-    double widthLength;
-    double heightLength;
+    private final double widthLength;
+    private final double heightLength;
 
     public Rectangle(double widthLength, double heightLength) {
         this.widthLength = widthLength;
