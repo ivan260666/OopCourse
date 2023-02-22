@@ -9,8 +9,16 @@ public class Range {
         this.to = to;
     }
 
+    public double getFrom() {
+        return from;
+    }
+
     public void setFrom(double from) {
         this.from = from;
+    }
+
+    public double getTo() {
+        return to;
     }
 
     public void setTo(double to) {
@@ -28,17 +36,11 @@ public class Range {
     }
 
     public Range getIntersection(Range range) {
-        double from1 = from;
-        double to1 = to;
+        double intersectionFrom = Math.max(from, range.from);
+        double intersectionTo = Math.min(to, range.to);
 
-        double from2 = range.from;
-        double to2 = range.to;
-
-        double intersectionFrom = Math.max(from1, from2);
-        double intersectionTo = Math.min(to1, to2);
-
-        if ((intersectionFrom >= Math.min(from1, from2) && intersectionFrom <= Math.max(to1, to2)) &&
-                (intersectionTo >= Math.min(from1, from2) && intersectionTo <= Math.max(to1, to2)) &&
+        if ((intersectionFrom <= Math.max(to, range.to)) &&
+                (intersectionTo >= Math.min(from, range.from)) &&
                 (intersectionFrom < intersectionTo)) {
             return new Range(intersectionFrom, intersectionTo);
         }
@@ -47,53 +49,43 @@ public class Range {
     }
 
     public Range[] getUnion(Range range) {
-        double from1 = from;
-        double to1 = to;
+        double intersectionFrom = Math.max(from, range.from);
+        double intersectionTo = Math.min(to, range.to);
 
-        double from2 = range.from;
-        double to2 = range.to;
-
-        double intersectionFrom = Math.max(from1, from2);
-        double intersectionTo = Math.min(to1, to2);
-
-        if ((intersectionFrom >= Math.min(from1, from2) && intersectionFrom <= Math.max(to1, to2)) &&
-                (intersectionTo >= Math.min(from1, from2) && intersectionTo <= Math.max(to1, to2)) &&
+        if ((intersectionFrom <= Math.max(to, range.to)) &&
+                (intersectionTo >= Math.min(from, range.from)) &&
                 (intersectionFrom <= intersectionTo)) {
-            return new Range[]{new Range(Math.min(from1, from2), Math.max(to1, to2))};
+            return new Range[]{new Range(Math.min(from, range.from), Math.max(to, range.to))};
         }
 
-        return new Range[]{new Range(from1, to1), new Range(from2, to2)};
+        return new Range[]{new Range(from, to), new Range(range.from, range.to)};
     }
 
     public Range[] getDifference(Range subtractedRange) {
-        double from = this.from;
-        double to = this.to;
+        if (!((Math.max(from, subtractedRange.from) <= Math.max(to, subtractedRange.to)) &&
+                (Math.min(to, subtractedRange.to) >= Math.min(from, subtractedRange.from)) &&
+                (Math.max(from, subtractedRange.from) < Math.min(to, subtractedRange.to)))) {
+            return new Range[]{new Range(from, to)};
+        }
 
-        double subtrahendRangeFrom = subtractedRange.from;
-        double subtrahendRangeTo = subtractedRange.to;
-
-        if ((from >= subtrahendRangeFrom && from <= subtrahendRangeTo) &&
-                (to >= subtrahendRangeFrom && to <= subtrahendRangeTo)) {
+        if ((from >= subtractedRange.from) &&
+                (to <= subtractedRange.to)) {
             return new Range[]{};
         }
 
-        if (from >= subtrahendRangeFrom && from <= subtrahendRangeTo) {
-            return new Range[]{new Range(subtrahendRangeTo, to)};
+        if (from >= subtractedRange.from) {
+            return new Range[]{new Range(subtractedRange.to, to)};
         }
 
-        if (to >= subtrahendRangeFrom && to <= subtrahendRangeTo) {
-            return new Range[]{new Range(from, subtrahendRangeFrom)};
+        if (to <= subtractedRange.to) {
+            return new Range[]{new Range(from, subtractedRange.from)};
         }
 
-        if (this.getIntersection(subtractedRange) != null) {
-            return new Range[]{new Range(from, subtrahendRangeFrom), new Range(subtrahendRangeTo, to)};
-        }
-
-        return new Range[]{new Range(from, to)};
+        return new Range[]{new Range(from, subtractedRange.from), new Range(subtractedRange.to, to)};
     }
 
     @Override
     public String toString() {
-        return "Начало диапазона = " + from + ", конец диапазона = " + to;
+        return "(" + from + "; " + to + ")";
     }
 }
