@@ -1,9 +1,17 @@
-package ru.academits.shalnov.shape;
+package ru.academits.shalnov.shapes;
 
 public class Circle implements Shape {
-    private final double radius;
+    private double radius;
 
     public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
         this.radius = radius;
     }
 
@@ -19,7 +27,7 @@ public class Circle implements Shape {
 
     @Override
     public double getArea() {
-        return Math.PI * (radius * radius);
+        return Math.PI * radius * radius;
     }
 
     @Override
@@ -29,16 +37,22 @@ public class Circle implements Shape {
 
     @Override
     public String toString() {
-        return "Фигура - круг, ширина фигуры = " + getWidth() + ", длина фигуры = " + getHeight() +
-                ", периметр фигуры = " + getPerimeter() + ", площадь фигуры = " + getArea();
+        return "Фигура - круг, радиус фигуры = " + radius;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         Circle circle = (Circle) o;
-        return Double.compare(circle.radius, radius) == 0;
+
+        return circle.radius == radius;
     }
 
     @Override
